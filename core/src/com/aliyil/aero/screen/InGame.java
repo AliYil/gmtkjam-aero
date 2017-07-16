@@ -26,17 +26,6 @@ public class InGame extends Screen {
         super.start();
         getSharedValues().score = 0;
 
-
-        addPlatform(Game.w * 0.5f, 100f);
-
-        for (int i = 0; i<20; i++){
-            addPlatform(i * Block.size, 100f + Block.size * 3f);
-        }
-
-//        for (int i = 0; i<20; i++){
-//            addRandomPlatformsToRow((100f + Block.size*5f) + i * 100f);
-//        }
-
         spawnerHeight = (100f + Block.size*5f);
 
         scoreText = new Text(getGameInstance(), "SCORE:");

@@ -13,7 +13,8 @@ public final class SoundManager {
         float vol = 0.3f;
         Sound s = gameInstance.getResourceManager().hit1;
         s.stop();
-        s.setPitch(s.play(vol), 5f);
+        s.play(vol);
+//        s.setPitch(s.play(vol), 5f);
     }
 
     public void jump(){

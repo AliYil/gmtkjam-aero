@@ -1,7 +1,7 @@
 package com.aliyil.aero.screen;
 
 import com.aliyil.aero.Game;
-import com.aliyil.aero.entity.DBG_TxInfo;
+//import com.aliyil.aero.entity.DBG_TxInfo;
 import com.aliyil.aero.entity.LoadingBar;
 import com.aliyil.aero.entity.Screen;
 
