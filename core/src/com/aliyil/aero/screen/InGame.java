@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class InGame extends Screen {
     private Array<Block> blocks;
-    private Block platform;
+    private Block block;
     private Player player;
 
     public InGame(Game game) {
@@ -20,16 +20,21 @@ public class InGame extends Screen {
         super.start();
         blocks = new Array<Block>();
 
-        platform = new Block(getGameInstance());
-        platform.start();
-        platform.setPosition(Game.w * 0.5f, Game.h * 0.2f);
+        block = new Block(getGameInstance());
+        block.start();
+        block.setPosition(Game.w * 0.5f, Game.h * 0.3f);
+        blocks.add(block);
 
         player = new Player(getGameInstance(), blocks);
-        player.setPosition(platform.getPosVector());
+        player.setPosition(block.getPosVector());
         player.start();
-        player.jump();
 
-        blocks.add(platform);
+        for (int i = 0; i<100; i++){
+            block = new Block(getGameInstance());
+            block.start();
+            block.setPosition(i * block.getSprite().getWidth(), block.getSprite().getHeight()/2f);
+            blocks.add(block);
+        }
     }
 
     @Override
@@ -40,7 +45,7 @@ public class InGame extends Screen {
     @Override
     public void stop() {
         super.stop();
-        platform.kill();
+        block.kill();
         player.kill();
     }
 

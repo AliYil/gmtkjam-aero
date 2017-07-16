@@ -4,16 +4,17 @@ import com.aliyil.aero.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends SpriteEntity {
     Array<Block> blocks;
     State state;
+    private Rectangle previousBoundingRectangle;
 
     private float moveSpeed = 400;
-    private float jumpPower = 700;
-    private float gravity = 1500;
+    private float jumpPower = 900;
+    private float gravity = 2200;
 
     public Player(Game game, Array<Block> blocks) {
         super(game, game.getResourceManager().blockTexture);
@@ -21,12 +22,14 @@ public class Player extends SpriteEntity {
         this.blocks = blocks;
         resizeWidth(50);
         enableInputListener(0);
+        previousBoundingRectangle = new Rectangle(getSprite().getBoundingRectangle());
     }
 
     @Override
     public void start() {
         super.start();
         state = State.MidAir;
+        accY = -gravity;
         setMoving(true);
     }
 
@@ -39,15 +42,44 @@ public class Player extends SpriteEntity {
                     jump();
                 break;
             case MidAir:
+                Rectangle playerBoundingRect = getSprite().getBoundingRectangle();
                 for (Block block : blocks) {
-                    if(block.getSprite().getBoundingRectangle().overlaps(getSprite().getBoundingRectangle())){
-                        setY(block.getY() + block.getSprite().getHeight());
-                        state = State.Stand;
-                        setMoving(false);
+                    Rectangle blockRect = block.getSprite().getBoundingRectangle();
+                    if(blockRect.overlaps(getSprite().getBoundingRectangle())){
+                        int i = 0;
+                    }
+
+                    if(blockRect.overlaps(playerBoundingRect) && !blockRect.overlaps(previousBoundingRectangle)){
+
+                        if(previousBoundingRectangle.getY() >= blockRect.getY() + blockRect.getHeight()){
+                            setY(block.getY() + block.getSprite().getHeight());
+                            if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+                                jump();
+                            }else{
+                                state = State.Stand;
+                                setMoving(false);
+                            }
+                        }
+
+
                     }
                 }
                 break;
         }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT))
+            speedX = -moveSpeed;
+        else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+            speedX = moveSpeed;
+        else{
+            speedX = 0;
+        }
+    }
+
+    @Override
+    protected void calculateMovings() {
+        previousBoundingRectangle.set(getSprite().getBoundingRectangle());
+        super.calculateMovings();
     }
 
     public void jump(){
