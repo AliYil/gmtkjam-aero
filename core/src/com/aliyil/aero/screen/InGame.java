@@ -12,8 +12,6 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Iterator;
 
 public class InGame extends Screen {
-    private Array<Block> blocks;
-    private Player player;
     private Text scoreText;
 
     private float spawnerHeight;
@@ -28,14 +26,8 @@ public class InGame extends Screen {
         super.start();
         getSharedValues().score = 0;
 
-        blocks = new Array<Block>();
 
         addPlatform(Game.w * 0.5f, 100f);
-
-        player = new Player(getGameInstance(), blocks);
-        player.zIndex = -10;
-        player.setPosition(Game.w * 0.5f, 101f+Block.size);
-        player.start();
 
         for (int i = 0; i<20; i++){
             addPlatform(i * Block.size, 100f + Block.size * 3f);
@@ -45,7 +37,7 @@ public class InGame extends Screen {
 //            addRandomPlatformsToRow((100f + Block.size*5f) + i * 100f);
 //        }
 
-        spawnerHeight = (100f + Block.size*4f);
+        spawnerHeight = (100f + Block.size*5f);
 
         scoreText = new Text(getGameInstance(), "SCORE:");
         scoreText.setPosition(10f, Game.h - scoreText.getBoundingRectangle().height - 10);
@@ -81,7 +73,7 @@ public class InGame extends Screen {
         Block block = new Block(getGameInstance());
         block.start();
         block.setPosition(x, y);
-        blocks.add(block);
+        getSharedValues().blocks.add(block);
     }
 
     @Override
@@ -95,7 +87,7 @@ public class InGame extends Screen {
             spawnerHeight = spawnHeightLimit;
 
         float scrollAt = Game.h * 0.5f;
-        float scrollDiff = player.getY() - scrollAt;
+        float scrollDiff = getSharedValues().player.getY() - scrollAt;
         if(scrollDiff < 0) scrollDiff = 0;
         scrollDiff += 10f;
 
@@ -108,10 +100,10 @@ public class InGame extends Screen {
             addRandomPlatformsToRow(spawnerHeight);
         }
 
-        player.translateY(-translateAmount);
-        player.previousBoundingRectangle.setY(player.previousBoundingRectangle.getY() - translateAmount);
+        getSharedValues().player.translateY(-translateAmount);
+        getSharedValues().player.previousBoundingRectangle.setY(getSharedValues().player.previousBoundingRectangle.getY() - translateAmount);
 
-        for (Iterator<Block> iterator = blocks.iterator(); iterator.hasNext();) {
+        for (Iterator<Block> iterator = getSharedValues().blocks.iterator(); iterator.hasNext();) {
             Block block = iterator.next();
             if(!block.isLiving()){
                 iterator.remove();
@@ -125,9 +117,8 @@ public class InGame extends Screen {
             }
         }
 
-        if(player.getY()<0){
-            stop();
-            start();
+        if(getSharedValues().player.getY()<0){
+            new Main(getGameInstance()).start();
         }
 
         scoreText.setText("SCORE: " + getSharedValues().score);
@@ -138,11 +129,11 @@ public class InGame extends Screen {
     @Override
     public void stop() {
         super.stop();
-        player.kill();
+        getSharedValues().player.kill();
         scoreText.kill();
 
-        for (Block block : blocks) {
-            block.kill();
+        for (Block block : getSharedValues().blocks) {
+            block.disappear();
         }
     }
 

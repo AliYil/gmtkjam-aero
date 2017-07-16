@@ -1,13 +1,19 @@
 package com.aliyil.aero;
 
+import com.aliyil.aero.entity.Block;
+import com.aliyil.aero.entity.Player;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 public final class SharedValues {
     public Vector2 touch = new Vector2();
     public boolean paused = false;
     public int score;
+
+    public Array<Block> blocks;
+    public Player player;
 
     //Overall Game Speed Multiplier
     public float gameSpeed = 1f;

@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends SpriteEntity {
-    private Array<Block> blocks;
     private State state;
     public Rectangle previousBoundingRectangle;
     private Rectangle floorCheckRect;
@@ -19,10 +18,9 @@ public class Player extends SpriteEntity {
     private float jumpHoldPower = 150;
     private float gravity = 2700;
 
-    public Player(Game game, Array<Block> blocks) {
+    public Player(Game game) {
         super(game, game.getResourceManager().blockTexture);
         setColor(new Color(Color.GREEN));
-        this.blocks = blocks;
         resizeWidth(50);
         enableInputListener(0);
         previousBoundingRectangle = new Rectangle(getSprite().getBoundingRectangle());
@@ -58,7 +56,7 @@ public class Player extends SpriteEntity {
                 floorCheckRect.set(getSprite().getBoundingRectangle());
                 floorCheckRect.setY(floorCheckRect.getY()-0.1f);
                 boolean free = true;
-                for (Block block : blocks) {
+                for (Block block : getSharedValues().blocks) {
                     Rectangle blockRect = block.getBoundingRectangle();
                     if(blockRect.overlaps(floorCheckRect)){
                         free = false;
@@ -85,7 +83,7 @@ public class Player extends SpriteEntity {
 
                 //Collision detection
                 Rectangle playerBoundingRect = getSprite().getBoundingRectangle();
-                for (Block block : blocks) {
+                for (Block block : getSharedValues().blocks) {
                     Rectangle blockRect = block.getBoundingRectangle();
                     if(blockRect.overlaps(playerBoundingRect)/* && !blockRect.overlaps(previousBoundingRectangle)*/){
                         if(previousBoundingRectangle.getY() >= blockRect.getY() + blockRect.getHeight()){
@@ -99,6 +97,7 @@ public class Player extends SpriteEntity {
                         }else if(!block.isDisappearing()){
                             block.disappear();
                             getSharedValues().score++;
+                            getGameInstance().getSoundManager().hit();
                         }
                     }
                 }
@@ -126,10 +125,11 @@ public class Player extends SpriteEntity {
                 speedY * dts());
     }
 
-    private void jump(){
+    public void jump(){
         setState(State.MidAir);
         jumpAcc = jumpHoldPower;
         speedY = baseJumpPower;
+        getGameInstance().getSoundManager().jump();
     }
 
     @Override

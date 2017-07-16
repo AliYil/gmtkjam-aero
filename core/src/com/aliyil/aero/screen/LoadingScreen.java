@@ -30,7 +30,7 @@ public class LoadingScreen extends Screen {
             loaded = true;
             getGameInstance().getResourceManager().finishLoading();
 
-            new InGame(getGameInstance()).start();
+            new Main(getGameInstance()).start();
 //            if (Game.devMode)
 //                new DBG_TxInfo(getGameInstance()).start();
         }
