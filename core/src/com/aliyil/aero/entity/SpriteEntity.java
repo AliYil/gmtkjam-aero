@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class SpriteEntity extends Entity {
-    public Color color;
     protected boolean canAutoUpdateCenter;
     protected float stateTime;
     protected boolean isAnimating;
@@ -81,7 +81,7 @@ public class SpriteEntity extends Entity {
                     getSprite().setRegion(animation.getKeyFrame(stateTime));
                 }
             }
-            sprite.setColor(color);
+            sprite.setColor(getColor());
             sprite.setAlpha(getAlpha());
             sprite.draw(batch);
         }
@@ -91,6 +91,11 @@ public class SpriteEntity extends Entity {
         sprite.setPosition(
                 x - sprite.getOriginX(),
                 y - sprite.getOriginY());
+    }
+
+    @Override
+    public Vector2 getPosVector() {
+        return new Vector2(getX(), getY());
     }
 
     @Override

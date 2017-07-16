@@ -1,7 +1,7 @@
 # gmtkjam-aero
 My game for Game Maker's Tool Kit game jam codenamed Aero
 
-MIT License
+### MIT License
 
 Copyright (c) 2017 AliYil
 

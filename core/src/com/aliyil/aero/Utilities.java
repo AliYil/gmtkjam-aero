@@ -98,7 +98,6 @@ public final class Utilities {
         return rect2;
     }
 
-    //Her yönden amount kadar büyütür
     public static Rectangle enlargeRectangle(Rectangle rect, float amount) {
         Rectangle rect2 = new Rectangle(rect);
         rect2.setPosition(rect.getX() - amount, rect.getY() - amount);
