@@ -168,16 +168,12 @@ public class Game extends ApplicationAdapter {
 
     private void completeAdding() {
         for (Entity entity : addQueue) {
-            if (entity.zIndex == 0)
-                entities.add(entity);
-            else {
-                ListIterator<Entity> iterator = entities.listIterator();
-                while (iterator.hasNext()) {
-                    if (iterator.next().zIndex >= entity.zIndex)
-                        break;
-                }
-                iterator.add(entity);
+            ListIterator<Entity> iterator = entities.listIterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().zIndex >= entity.zIndex)
+                    break;
             }
+            iterator.add(entity);
         }
         addQueue.clear();
     }

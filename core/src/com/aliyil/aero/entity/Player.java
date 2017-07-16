@@ -8,13 +8,16 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Player extends SpriteEntity {
-    Array<Block> blocks;
-    State state;
-    private Rectangle previousBoundingRectangle;
+    private Array<Block> blocks;
+    private State state;
+    public Rectangle previousBoundingRectangle;
+    private Rectangle floorCheckRect;
 
+    private float jumpAcc = 0;
     private float moveSpeed = 400;
-    private float jumpPower = 900;
-    private float gravity = 2200;
+    private float baseJumpPower = 600;
+    private float jumpHoldPower = 150;
+    private float gravity = 2700;
 
     public Player(Game game, Array<Block> blocks) {
         super(game, game.getResourceManager().blockTexture);
@@ -23,14 +26,26 @@ public class Player extends SpriteEntity {
         resizeWidth(50);
         enableInputListener(0);
         previousBoundingRectangle = new Rectangle(getSprite().getBoundingRectangle());
+        floorCheckRect = new Rectangle();
     }
 
     @Override
     public void start() {
         super.start();
-        state = State.MidAir;
-        accY = -gravity;
+        setState(State.MidAir);
         setMoving(true);
+    }
+
+    public void setState(State stete){
+        this.state = stete;
+        switch (stete) {
+            case Stand:
+                accY = 0;
+                break;
+            case MidAir:
+                accY = -gravity;
+                break;
+        }
     }
 
     @Override
@@ -40,30 +55,54 @@ public class Player extends SpriteEntity {
             case Stand:
                 if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
                     jump();
+                floorCheckRect.set(getSprite().getBoundingRectangle());
+                floorCheckRect.setY(floorCheckRect.getY()-0.1f);
+                boolean free = true;
+                for (Block block : blocks) {
+                    Rectangle blockRect = block.getBoundingRectangle();
+                    if(blockRect.overlaps(floorCheckRect)){
+                        free = false;
+                        break;
+                    }
+                }
+                if(free){
+                    setState(State.MidAir);
+                }
+
                 break;
             case MidAir:
+                //Hold jump mechanic
+                if(jumpAcc > 0){
+                    if(!Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+                        jumpAcc = 0;
+                    }
+                    jumpAcc *= 0.8f;
+                    speedY += jumpAcc;
+                }
+                else{
+                    jumpAcc = 0;
+                }
+
+                //Collision detection
                 Rectangle playerBoundingRect = getSprite().getBoundingRectangle();
                 for (Block block : blocks) {
-                    Rectangle blockRect = block.getSprite().getBoundingRectangle();
-                    if(blockRect.overlaps(getSprite().getBoundingRectangle())){
-                        int i = 0;
-                    }
-
-                    if(blockRect.overlaps(playerBoundingRect) && !blockRect.overlaps(previousBoundingRectangle)){
-
+                    Rectangle blockRect = block.getBoundingRectangle();
+                    if(blockRect.overlaps(playerBoundingRect)/* && !blockRect.overlaps(previousBoundingRectangle)*/){
                         if(previousBoundingRectangle.getY() >= blockRect.getY() + blockRect.getHeight()){
-                            setY(block.getY() + block.getSprite().getHeight());
+                            setY(block.getY() + Block.size);
+                            speedY = 0;
                             if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
                                 jump();
                             }else{
-                                state = State.Stand;
-                                setMoving(false);
+                                setState(State.Stand);
                             }
+                        }else if(!block.isDisappearing()){
+                            block.disappear();
+                            getSharedValues().score++;
                         }
-
-
                     }
                 }
+
                 break;
         }
 
@@ -79,14 +118,18 @@ public class Player extends SpriteEntity {
     @Override
     protected void calculateMovings() {
         previousBoundingRectangle.set(getSprite().getBoundingRectangle());
-        super.calculateMovings();
+        float horizontalSpeedScale = state == State.MidAir ? 1 : 0.3f;
+        speedX += accX * dts();
+        speedY += accY * dts();
+        translate(
+                speedX * dts() * horizontalSpeedScale,
+                speedY * dts());
     }
 
-    public void jump(){
-        state = State.MidAir;
-        accY = -gravity;
-        speedY = jumpPower;
-        setMoving(true);
+    private void jump(){
+        setState(State.MidAir);
+        jumpAcc = jumpHoldPower;
+        speedY = baseJumpPower;
     }
 
     @Override
@@ -124,7 +167,7 @@ public class Player extends SpriteEntity {
         return super.keyUp(keycode);
     }
 
-    private enum State{
+    public enum State{
         Stand,
         MidAir
     }

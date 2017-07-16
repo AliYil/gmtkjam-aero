@@ -7,8 +7,11 @@ import com.badlogic.gdx.math.Vector2;
 public final class SharedValues {
     public Vector2 touch = new Vector2();
     public boolean paused = false;
+    public int score;
+
     //Overall Game Speed Multiplier
     public float gameSpeed = 1f;
+
     //Theme Color
     public Color bgColor;
     public Rectangle leftRect = new Rectangle(-1000, 0, 1000, Game.h + 1000);
